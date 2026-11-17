@@ -1,0 +1,11 @@
+{
+  "name": "flexma-online-market-netlify",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Flexma Online Market website prepared for Netlify hosting",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "bcryptjs": "^2.4.3",
+    "nodemailer": "^6.10.0"
+  }
+}
