@@ -139,7 +139,7 @@ export default async function handler(request, context) {
   try {
     const store = getStore("flexma-online-market");
     const url = new URL(request.url);
-    let path = url.pathname.replace(/^\/\.netlify\/functions\/api/, "");
+    let path = url.pathname.replace(/^\/(?:\.netlify\/functions\/api|api)(?=\/|$)/, "");
     if (!path) path = "/";
     path = path.replace(/\/+$/, "") || "/";
     const method = request.method.toUpperCase();
