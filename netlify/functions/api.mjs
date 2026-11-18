@@ -257,6 +257,16 @@ export default async function handler(request, context) {
         });
       }
 
+      if (method === "POST" && path === "/admin/students") {
+        const rows = await getData(store, "students", []);
+        const row = { id: Date.now(), full_name: clean(body.full_name, 120), phone: clean(body.phone, 30), state: clean(body.state, 40), course: clean(body.course, 120), message: clean(body.message, 1500), status: "new", email_sent: false, created_at: new Date().toISOString(), manually_added: true };
+        if (!row.full_name || !row.phone || !row.state || !row.course) return json(400, { error: "Name, WhatsApp number, state and course are required." });
+        if (!states.includes(row.state)) return json(400, { error: "Please select a valid Nigerian state." });
+        rows.unshift(row);
+        await setData(store, "students", rows);
+        return json(201, { ok: true, student: row });
+      }
+
       if (method === "GET" && path === "/admin/students") {
         let rows = await getData(store, "students", []);
         const query = clean(url.searchParams.get("q"), 100).toLowerCase();
@@ -274,11 +284,26 @@ export default async function handler(request, context) {
         const rows = await getData(store, "students", []);
         const row = rows.find((item) => item.id === id);
         if (!row) return json(404, { error: "Student not found." });
-        if (!["new", "contacted", "enrolled", "completed"].includes(body.status)) {
-          return json(400, { error: "Invalid status." });
+        const allowed = ["full_name", "phone", "state", "course", "message", "status"];
+        for (const key of allowed) {
+          if (body[key] !== undefined) row[key] = clean(body[key], key === "message" ? 1500 : 200);
         }
-        row.status = body.status;
+        if (!row.full_name || !row.phone || !row.state || !row.course) {
+          return json(400, { error: "Name, WhatsApp number, state and course are required." });
+        }
+        if (!states.includes(row.state)) return json(400, { error: "Please select a valid Nigerian state." });
+        if (!["new", "contacted", "enrolled", "completed"].includes(row.status)) {
+          return json(400, { error: "Invalid student status." });
+        }
         await setData(store, "students", rows);
+        return json(200, { ok: true, student: row });
+      }
+
+      if (method === "DELETE" && path.startsWith("/admin/students/")) {
+        const id = Number(path.split("/").pop());
+        const rows = await getData(store, "students", []);
+        if (!rows.some((item) => item.id === id)) return json(404, { error: "Student not found." });
+        await setData(store, "students", rows.filter((item) => item.id !== id));
         return json(200, { ok: true });
       }
 
