@@ -29,3 +29,6 @@ init().catch(e=>console.error(e));
 [hidden] {
   display: none !important;
 }
+[hidden] {
+  display: none !important;
+}
