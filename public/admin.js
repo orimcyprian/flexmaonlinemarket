@@ -26,3 +26,6 @@ $("#scheduleRows").addEventListener("click",async e=>{const id=e.target.dataset.
 async function loadEnquiries(){const rows=await api("/api/admin/enquiries");$("#enquiryRows").innerHTML=rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.email)}<br>${esc(r.phone)}</td><td>${esc(r.service)}</td><td>${esc(r.message)}</td><td>${esc(r.created_at)}</td></tr>`).join("")||'<tr><td colspan="5">No enquiries yet.</td></tr>'}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 init().catch(e=>console.error(e));
+[hidden] {
+  display: none !important;
+}
